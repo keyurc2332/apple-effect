@@ -1,0 +1,41 @@
+# Core data
+pandas>=2.0
+numpy>=1.24
+scipy>=1.11
+statsmodels>=0.14
+
+# Google / YouTube
+google-api-python-client>=2.100
+python-dotenv>=1.0
+
+# Reddit (install only after authorized API access)
+# praw>=7.7
+
+# Google Trends
+pytrends>=4.9
+
+# NLP
+transformers>=4.35
+sentence-transformers>=2.2
+spacy>=3.7
+scikit-learn>=1.3
+
+# ML
+xgboost>=2.0
+lightgbm>=4.1
+
+# Dimensionality reduction & clustering
+umap-learn>=0.5
+hdbscan>=0.8
+
+# Visualization
+plotly>=5.17
+matplotlib>=3.7
+seaborn>=0.13
+
+# App
+streamlit>=1.28
+
+# Utilities
+requests>=2.31
+tqdm>=4.66
