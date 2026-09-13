@@ -79,6 +79,14 @@ else:
 labeled_ids = set(labels.keys())
 unlabeled   = [i for i in range(len(comments)) if str(i) not in labeled_ids]
 
+# Auto-skip non-English comments
+def is_english(text):
+    text = str(text)
+    if len(text) == 0: return False
+    return (sum(1 for c in text if ord(c) < 128) / len(text)) >= 0.85
+
+unlabeled_en = [i for i in unlabeled if is_english(comments.iloc[i]["text_clean"])]
+
 # ── Header ────────────────────────────────────────────────────────────────────
 col1, col2 = st.columns([3, 1])
 with col1:
@@ -99,6 +107,10 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+if not unlabeled_en:
+    st.warning("No more English comments to label.")
+    st.stop()
+
 if done >= TARGET:
     st.success(f"✅ Labelling complete! {done} comments labelled. Run the evaluation script next.")
     if st.button("Download labels as CSV"):
@@ -117,8 +129,18 @@ if not unlabeled:
     st.stop()
 
 # ── Pick next comment ─────────────────────────────────────────────────────────
-if "current_idx" not in st.session_state or st.session_state.current_idx not in unlabeled:
-    st.session_state.current_idx = unlabeled[0]
+# Auto-skip non-English comments (>30% non-ASCII chars)
+def is_english(text):
+    text = str(text)
+    if len(text) == 0: return False
+    ascii_ratio = sum(1 for c in text if ord(c) < 128) / len(text)
+    return ascii_ratio >= 0.85
+
+# Filter unlabeled to English only
+unlabeled_en = [i for i in unlabeled if is_english(comments.iloc[i]["text_clean"])]
+
+if "current_idx" not in st.session_state or st.session_state.current_idx not in unlabeled_en:
+    st.session_state.current_idx = unlabeled_en[0] if unlabeled_en else None
 
 idx     = st.session_state.current_idx
 comment = comments.iloc[idx]
@@ -164,14 +186,17 @@ with col_a:
             "intent":    intent,
         }
         LABEL_FILE.write_text(json.dumps(labels, indent=2))
-        # move to next
-        remaining = [i for i in unlabeled if str(i) not in labels]
+        # move to next English comment
+        remaining = [i for i in unlabeled_en if str(i) not in labels]
         if remaining:
             st.session_state.current_idx = remaining[0]
         st.rerun()
 with col_b:
     if st.button("Skip"):
-        remaining = [i for i in unlabeled if i != idx and str(i) not in labels]
+        # Mark as skipped so it never comes back
+        labels[str(idx)] = {"aspect": "SKIPPED", "sentiment": "SKIPPED", "intent": "SKIPPED"}
+        LABEL_FILE.write_text(json.dumps(labels, indent=2))
+        remaining = [i for i in unlabeled_en if str(i) not in labels and i != idx]
         if remaining:
             st.session_state.current_idx = remaining[0]
         st.rerun()
