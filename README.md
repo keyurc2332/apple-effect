@@ -95,13 +95,23 @@ YouTube Data API  ──►  Raw Comments (5,104)
 
 **ML results:**
 
+**Auto-label experiment** (model trained on its own generated labels — useful for pipeline consistency check):
+
 | Model | Macro F1 | vs Baseline |
 |-------|----------|-------------|
-| Majority Baseline | 0.397 | — |
-| TF-IDF + Logistic Regression | **0.899** | +0.502 |
-| Sentence Embeddings + LR | 0.735 | +0.338 |
+| Majority Baseline | 0.396 | — |
+| TF-IDF + Logistic Regression | 0.959 | +0.563 |
+| Sentence Embeddings + LR | 0.729 | +0.333 |
 
-TF-IDF outperformed sentence embeddings — because sentiment in tech YouTube comments is driven by highly specific vocabulary ("deal breaker", "overpriced", "incredible") rather than semantic context. That's a real finding, not a failure.
+**Human-validated experiment** (5-fold CV on 175 manually labelled comments — genuine ground truth):
+
+| Model | Macro F1 | Cohen's κ | vs Baseline |
+|-------|----------|-----------|-------------|
+| Majority Baseline | 0.190 | 0.000 | — |
+| TF-IDF + Logistic Regression | **0.384** | **0.184** | +0.194 |
+| TF-IDF + Random Forest | 0.322 | 0.076 | +0.132 |
+
+The human-validated F1 of 0.384 reflects the genuine difficulty of the task — YouTube comment sentiment is highly contextual, with heavy sarcasm, mixed opinions, and implicit negation. Neutral is the hardest class. This is an honest benchmark, not a pipeline consistency check.
 
 ---
 
