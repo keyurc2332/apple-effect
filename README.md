@@ -112,6 +112,8 @@ Apple emphasis scores are manually derived from keyword frequency in the officia
 | TF-IDF + Logistic Regression | **0.384** | **0.184** | +0.194 |
 | TF-IDF + Random Forest | 0.322 | 0.076 | +0.132 |
 
+Labels are single-annotator (175 comments). Inter-annotator agreement was not measured — a known limitation documented in METHODOLOGY.md.
+
 The human-validated F1 of 0.384 reflects the genuine difficulty of the task — YouTube comment sentiment is highly contextual, with heavy sarcasm, mixed opinions, and implicit negation. Neutral is the hardest class. This is an honest benchmark, not a pipeline consistency check.
 
 ---
@@ -255,6 +257,7 @@ Regex pattern matching across 4 intent classes:
 - Purchase intent signals are rare (3.3% of comments) — statistical power is limited
 - Non-English comments (Hindi, German) required additional filtering; some may have slipped through
 - Data is launch-week only — sentiment may shift as reviews mature
+- Single-annotator labels: The 175 human-labelled comments were reviewed by one person. No inter-annotator agreement was calculated. This is a known limitation — Cohen's κ between annotators would strengthen the evaluation claim.
 
 ---
 
