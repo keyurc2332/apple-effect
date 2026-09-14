@@ -17,6 +17,7 @@
 
 ![Dashboard Preview](outputs/figures/dashboard_preview.png)
 
+**Live demo:** https://huggingface.co/spaces/Keyur2332/apple-effect
 </div>
 
 ---
