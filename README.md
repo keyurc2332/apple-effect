@@ -20,7 +20,15 @@
 
 ---
 
-![Dashboard Preview](outputs/figures/dashboard_preview.png)
+## Screenshots
+
+![Overview](docs/screenshots/overview_page.png)
+
+![Feature Perception Map](docs/screenshots/feature_intelligence.png)
+
+![Confidence Intervals](docs/screenshots/feature_chart.png)
+
+![ML Models](docs/screenshots/ml_models.png)
 
 </div>
 
