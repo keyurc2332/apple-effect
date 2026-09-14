@@ -92,6 +92,7 @@ YouTube Data API  ──►  Raw Comments (5,104)
 **The gap between Apple's emphasis and consumer emphasis:**
 - Apple pushed: A20 chip, Apple Intelligence, Foldable design
 - Consumers discussed: AI/Siri (skeptically), Price (debating value), Durability (worried)
+Apple emphasis scores are manually derived from keyword frequency in the official iPhone Duo product page and September 9 keynote transcript — not quantitatively scraped.
 
 **ML results:**
 

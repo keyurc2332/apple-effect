@@ -210,9 +210,9 @@ print(f"""
      → Most discussed, least resolved. Consumers are watching
        Apple Intelligence before committing.
 
-  5. TF-IDF beat embeddings (F1: 0.899 vs 0.735).
-     → Sentiment in tech YouTube comments is lexically driven.
-       Specific words matter more than semantic context.
+  5. Human-validated F1 = 0.384 (Cohen's κ = 0.184).
+     → Neutral is the hardest class — sarcasm and negation cause
+       most misclassifications. Honest benchmark, not circular eval.
 """)
 
 print(f"{SEP}")

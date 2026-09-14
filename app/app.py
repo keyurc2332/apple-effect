@@ -134,6 +134,11 @@ def load_data():
     except:
         d["clustered"] = None
         d["umap"]      = None
+    try:
+        import json
+        d["honest_eval"] = json.loads((REPORTS / "honest_evaluation.json").read_text())
+    except:
+        d["honest_eval"] = None
     return d
 
 data      = load_data()
@@ -142,7 +147,8 @@ comments  = data["comments"]
 videos    = data["videos"]
 ci_df     = data["ci"]
 model_df  = data["models"]
-clustered = data["clustered"]
+clustered    = data["clustered"]
+honest_eval  = data.get("honest_eval")
 
 aspects_real = pd.DataFrame()
 if len(aspects):
@@ -323,6 +329,57 @@ elif page == "Feature Intelligence":
                         xaxis=dict(gridcolor="#1d1d1f", zerolinecolor="#1d1d1f"),
                         yaxis=dict(gridcolor="rgba(0,0,0,0)"))
             st.plotly_chart(fig, use_container_width=True)
+
+    # ── Feature Perception Map ───────────────────────────────────────────────────
+    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+    st.markdown('<div class="ae-section-label">Feature perception map</div>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#6e6e73;font-size:12px;margin-bottom:16px">Each bubble: x = discussion volume · y = mean sentiment · colour = statistical signal</p>', unsafe_allow_html=True)
+
+    if len(aspects_real) and len(ci_df):
+        summary = aspects_real.groupby("aspect_label").agg(
+            total     = ("sentiment_score", "count"),
+            mean_sent = ("sentiment_score", "mean"),
+            pos_pct   = ("sentiment_score", lambda x: (x == 1).mean() * 100),
+            neg_pct   = ("sentiment_score", lambda x: (x == -1).mean() * 100),
+        ).reset_index()
+        ci_merge = ci_df.copy()
+        ci_merge["aspect_label"] = ci_merge["aspect"].str.replace("_", " ").str.title()
+        summary = summary.merge(ci_merge[["aspect_label","ci_lo","ci_hi"]], on="aspect_label", how="left")
+
+        def bubble_color(row):
+            if row.get("ci_lo", 0) > 0:  return "#34c759"
+            if row.get("ci_hi", 0) < 0:  return "#ff453a"
+            return "#0a84ff"
+        summary["color"] = summary.apply(bubble_color, axis=1)
+        max_total = summary["total"].max()
+        summary["bubble_size"] = (summary["total"] / max_total * 55 + 14).round(1)
+
+        hover = summary.apply(lambda r: (
+            f"<b>{r['aspect_label']}</b><br>"
+            f"Mentions: {int(r['total']):,}<br>"
+            f"Mean sentiment: {r['mean_sent']:+.3f}<br>"
+            f"Positive: {r['pos_pct']:.1f}%  Negative: {r['neg_pct']:.1f}%"
+        ), axis=1)
+
+        fig_map = go.Figure()
+        fig_map.add_hline(y=0, line_dash="dot", line_color="#3a3a3c", opacity=0.6)
+        fig_map.add_trace(go.Scatter(
+            x=summary["total"], y=summary["mean_sent"],
+            mode="markers+text",
+            marker=dict(size=summary["bubble_size"], color=summary["color"],
+                        opacity=0.85, line=dict(color="#000", width=1),
+                        sizemode="diameter"),
+            text=summary["aspect_label"],
+            textposition="top center",
+            textfont=dict(size=10, color="#f5f5f7"),
+            hovertext=hover, hoverinfo="text", name="",
+        ))
+        apply_theme(fig_map, height=480, showlegend=False,
+                    xaxis_title="Discussion volume (mentions)",
+                    yaxis_title="Mean sentiment (−1 → +1)",
+                    xaxis=dict(gridcolor="#1d1d1f", zerolinecolor="#1d1d1f"),
+                    yaxis=dict(gridcolor="#1d1d1f", zerolinecolor="#2a2a2a", range=[-0.32, 0.32]))
+        st.plotly_chart(fig_map, use_container_width=True)
 
     with col_r:
         st.markdown('<div class="ae-section-label">Drill into a feature</div>', unsafe_allow_html=True)
@@ -538,6 +595,49 @@ elif page == "ML Models":
                     xaxis=dict(gridcolor="rgba(0,0,0,0)"),
                     yaxis=dict(gridcolor="#1d1d1f", range=[0, 1]))
         st.plotly_chart(fig, use_container_width=True)
+
+    # ── Honest evaluation section ────────────────────────────────────────────────
+    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+    st.markdown('<div class="ae-section-label">Human-validated evaluation</div>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#6e6e73;font-size:12px;margin-bottom:16px">5-fold CV on 175 manually labelled comments — genuine ground truth, not circular auto-label evaluation</p>', unsafe_allow_html=True)
+
+    if honest_eval:
+        s = honest_eval.get("sentiment", {})
+        i = honest_eval.get("intent", {})
+        hc1, hc2, hc3, hc4 = st.columns(4)
+        hc1.metric("Human labels", f"{honest_eval.get('n_human_labels', 175):,}")
+        hc2.metric("Sentiment F1", f"{s.get('tfidf_lr_f1', 0.384):.3f}", delta="vs baseline 0.190")
+        hc3.metric("Cohen's κ", f"{s.get('tfidf_lr_kappa', 0.184):.3f}", delta="slight-fair agreement")
+        hc4.metric("Intent F1", f"{i.get('tfidf_lr_f1', 0.327):.3f}" if i.get('tfidf_lr_f1') else "N/A")
+
+        st.markdown(f"""
+        <div class="finding" style="margin-top:12px">
+            <strong>Why F1=0.384 is the right number to report.</strong>
+            The auto-label experiment (F1=0.959) trains a model on its own generated labels — 
+            circular by design. The human-validated experiment shows genuine performance against 
+            175 comments labelled independently. Neutral is the hardest class: sarcasm, negation, 
+            and mixed opinions cause most misclassifications. This is an honest benchmark.
+        </div>""", unsafe_allow_html=True)
+
+        # Mini comparison chart
+        honest_models = pd.DataFrame([
+            {"Model": "Majority Baseline", "Macro F1": s.get("majority_baseline_f1", 0.190)},
+            {"Model": "TF-IDF + LR", "Macro F1": s.get("tfidf_lr_f1", 0.384)},
+        ])
+        fig_h = px.bar(honest_models, x="Model", y="Macro F1",
+                       color="Macro F1",
+                       color_continuous_scale=[[0,"#ff453a"],[0.5,"#ff9f0a"],[1,"#34c759"]],
+                       template="plotly_dark",
+                       title="Human-validated F1 (5-fold CV, 175 labels)")
+        fig_h.update_traces(marker_line_width=0)
+        fig_h.add_hline(y=s.get("majority_baseline_f1", 0.190), line_dash="dot",
+                        line_color="#6e6e73", annotation_text="Baseline", annotation_font_size=11)
+        apply_theme(fig_h, height=240, coloraxis_showscale=False,
+                    yaxis=dict(gridcolor="#1d1d1f", range=[0, 0.6]),
+                    xaxis=dict(gridcolor="rgba(0,0,0,0)"))
+        st.plotly_chart(fig_h, use_container_width=True)
+    else:
+        st.info("Run `python src/evaluation/run_honest_classifier.py` to generate human-validated results.")
 
     st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
     col_l, col_r = st.columns(2)
