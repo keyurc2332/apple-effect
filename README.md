@@ -11,9 +11,6 @@
 
 **🚀 Live demo:** https://huggingface.co/spaces/Keyur2332/apple-effect
 
-
-**🚀 Live demo: https://huggingface.co/spaces/Keyur2332/apple-effect**
-
 **Apple announced a new generation of products. I wanted to know what consumers actually thought.**
 
 [Overview](#overview) · [Pipeline](#pipeline) · [Findings](#key-findings) · [Setup](#setup) · [Dashboard](#dashboard) · [Methodology](#methodology)
