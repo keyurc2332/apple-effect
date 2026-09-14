@@ -1,15 +1,12 @@
 # Core data
-pandas>=2.0
-numpy>=1.24
+pandas>=2.0,<3.1
+numpy>=1.24,<2.6
 scipy>=1.11
 statsmodels>=0.14
 
 # Google / YouTube
 google-api-python-client>=2.100
 python-dotenv>=1.0
-
-# Reddit (install only after authorized API access)
-# praw>=7.7
 
 # Google Trends
 pytrends>=4.9
