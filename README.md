@@ -9,6 +9,11 @@
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-1.3+-F7931E?style=flat-square&logo=scikit-learn&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-34c759?style=flat-square)
 
+**🚀 Live demo:** https://huggingface.co/spaces/Keyur2332/apple-effect
+
+
+**🚀 Live demo: https://huggingface.co/spaces/Keyur2332/apple-effect**
+
 **Apple announced a new generation of products. I wanted to know what consumers actually thought.**
 
 [Overview](#overview) · [Pipeline](#pipeline) · [Findings](#key-findings) · [Setup](#setup) · [Dashboard](#dashboard) · [Methodology](#methodology)
@@ -17,7 +22,6 @@
 
 ![Dashboard Preview](outputs/figures/dashboard_preview.png)
 
-**Live demo:** https://huggingface.co/spaces/Keyur2332/apple-effect
 </div>
 
 ---
