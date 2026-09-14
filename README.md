@@ -92,11 +92,13 @@ YouTube Data API  ──►  Raw Comments (5,104)
 **The gap between Apple's emphasis and consumer emphasis:**
 - Apple pushed: A20 chip, Apple Intelligence, Foldable design
 - Consumers discussed: AI/Siri (skeptically), Price (debating value), Durability (worried)
-Apple emphasis scores are manually derived from keyword frequency in the official iPhone Duo product page and September 9 keynote transcript — not quantitatively scraped.
 
 **ML results:**
 
-**Auto-label experiment** (model trained on its own generated labels — useful for pipeline consistency check):
+Two separate experiments were run. The human-ground-truth benchmark is the primary measure of model validity.
+
+### ① Automated-label benchmark
+*Measures how well models reproduce the pipeline-generated labels. Not a validity measure — included for transparency.*
 
 | Model | Macro F1 | vs Baseline |
 |-------|----------|-------------|
@@ -104,17 +106,16 @@ Apple emphasis scores are manually derived from keyword frequency in the officia
 | TF-IDF + Logistic Regression | 0.959 | +0.563 |
 | Sentence Embeddings + LR | 0.729 | +0.333 |
 
-**Human-validated experiment** (5-fold CV on 175 manually labelled comments — genuine ground truth):
+### ② Human-ground-truth benchmark ← primary result
+*5-fold stratified CV on 175 independently human-labelled comments. This is the number that matters.*
 
 | Model | Macro F1 | Cohen's κ | vs Baseline |
 |-------|----------|-----------|-------------|
 | Majority Baseline | 0.190 | 0.000 | — |
-| TF-IDF + Logistic Regression | **0.384** | **0.184** | +0.194 |
+| **TF-IDF + Logistic Regression** | **0.384** | **0.184** | +0.194 |
 | TF-IDF + Random Forest | 0.322 | 0.076 | +0.132 |
 
-Labels are single-annotator (175 comments). Inter-annotator agreement was not measured — a known limitation documented in METHODOLOGY.md.
-
-The human-validated F1 of 0.384 reflects the genuine difficulty of the task — YouTube comment sentiment is highly contextual, with heavy sarcasm, mixed opinions, and implicit negation. Neutral is the hardest class. This is an honest benchmark, not a pipeline consistency check.
+**F1 = 0.384** reflects the genuine difficulty of the task. YouTube comment sentiment involves heavy sarcasm, negation, and implicit opinion. Neutral is the hardest class. The gap between 0.959 (auto-label) and 0.384 (human-validated) is itself a finding — the automated pipeline is more confident than warranted. Labels are single-annotator; inter-annotator agreement was not measured (documented limitation).
 
 ---
 
@@ -257,7 +258,6 @@ Regex pattern matching across 4 intent classes:
 - Purchase intent signals are rare (3.3% of comments) — statistical power is limited
 - Non-English comments (Hindi, German) required additional filtering; some may have slipped through
 - Data is launch-week only — sentiment may shift as reviews mature
-- Single-annotator labels: The 175 human-labelled comments were reviewed by one person. No inter-annotator agreement was calculated. This is a known limitation — Cohen's κ between annotators would strengthen the evaluation claim.
 
 ---
 

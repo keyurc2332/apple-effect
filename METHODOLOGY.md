@@ -16,7 +16,13 @@ Zero-shot NER and LLM-based extraction are more flexible but significantly slowe
 
 ## Why TF-IDF over embeddings for sentiment?
 
-The ML comparison (Section 5) showed TF-IDF + Logistic Regression outperforming sentence embeddings (F1: 0.899 vs 0.735). This is expected in this domain: sentiment in tech review comments is signalled by highly specific vocabulary ("deal breaker", "overpriced", "day one purchase") that TF-IDF captures as exact features. Sentence embeddings are better at semantic equivalence across paraphrases — a strength that doesn't translate to performance gains when the discriminative signal is lexical.
+Two separate ML experiments were run:
+
+**Automated-label benchmark** (model trained on pipeline-generated labels — measures pipeline consistency):
+TF-IDF + LR: F1 = 0.959, Sentence Embeddings + LR: F1 = 0.729. TF-IDF outperformed embeddings because sentiment in tech YouTube comments is driven by specific vocabulary ("deal breaker", "overpriced", "day one purchase") that TF-IDF captures exactly.
+
+**Human-ground-truth benchmark** (5-fold CV on 175 manually labelled comments — primary validity measure):
+TF-IDF + LR: F1 = 0.384, κ = 0.184. This is the number that matters. The gap between 0.959 and 0.384 reflects the difficulty of the task — YouTube comment sentiment involves heavy sarcasm, negation, and implicit opinion that the lexicon-based pipeline handles more confidently than warranted.
 
 ## Why bootstrap confidence intervals instead of t-tests?
 
