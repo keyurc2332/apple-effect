@@ -231,8 +231,8 @@ Rule-based keyword matching across 12 product aspects:
 
 ### Sentiment classification
 - **Baseline:** Majority class (F1: 0.397)
-- **Model A:** TF-IDF (5,000 features, bigrams) + Logistic Regression (F1: **0.899**)
-- **Model B:** Sentence Embeddings (all-MiniLM-L6-v2, 384-dim) + Logistic Regression (F1: 0.735)
+- **Model A:** TF-IDF (5,000 features, bigrams) + Logistic Regression (F1: **0.959**)
+- **Model B:** Sentence Embeddings (all-MiniLM-L6-v2, 384-dim) + Logistic Regression (F1: 0.729)
 
 ### Purchase intent detection
 Regex pattern matching across 4 intent classes:
