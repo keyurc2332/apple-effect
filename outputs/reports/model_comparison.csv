@@ -1,0 +1,4 @@
+model,accuracy,macro_f1,improvement_over_baseline
+Majority Baseline,0.656,0.396,0.0
+TF-IDF + Logistic Regression,0.963,0.959,0.563
+Sentence Embeddings + Logistic Regression,0.776,0.729,0.333

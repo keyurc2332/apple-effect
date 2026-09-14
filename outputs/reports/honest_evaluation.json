@@ -1,0 +1,17 @@
+{
+  "evaluation_type": "human_ground_truth_5fold_cv",
+  "n_human_labels": 175,
+  "cv_folds": 5,
+  "sentiment": {
+    "majority_baseline_f1": 0.19,
+    "tfidf_lr_f1": 0.384,
+    "tfidf_lr_kappa": 0.184,
+    "rf_f1": 0.322,
+    "improvement_over_baseline": 0.194
+  },
+  "intent": {
+    "tfidf_lr_f1": 0.327,
+    "tfidf_lr_kappa": 0.192
+  },
+  "note": "These results are validated against 175 human-labelled comments using 5-fold stratified CV. This is genuine human-validated performance, not circular auto-label evaluation."
+}
